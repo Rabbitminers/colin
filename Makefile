@@ -10,6 +10,9 @@ objects = loader.o kernel.o
 %.o: %.s
 	as $(ASPARAMS) -o $@ $<
 
+testbuild:
+	g++ -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore -c kernel.cpp -m32 -o kernel.o
+
 mykernel.bin: linker.ld $(objects)
 	ld ${LDPARAMS} -s -T $< -o $@ $(objects)
 
