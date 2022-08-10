@@ -2,3 +2,5 @@
 kernel.o
 loader.o
 mykernel.bin
+iso
+mykernel.iso
