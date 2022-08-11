@@ -42,7 +42,7 @@ extern "C" void callConstructors() {
 }
 
 extern "C" void kernelMain(void* multiboot_structure, uint32_t) {
-    printf("Test Update!");
+    printf("Hello, World!");
 
     while(1);
 }
