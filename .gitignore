@@ -4,3 +4,4 @@ loader.o
 mykernel.bin
 iso
 mykernel.iso
+gdt.o

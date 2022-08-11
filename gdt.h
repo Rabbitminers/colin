@@ -22,35 +22,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "types.h"
-#include "gdt.h"
+#ifndef __GDT_H
+#define __GDT_H
 
-void printf(char* str)
-{
-    static uint16_t* VideoMemory = (uint16_t*)0xb8000;
+    #include "types.h"
+    
+    class GlobalDescriptorTable
+    {
+        public:
 
-    for(int i = 0; str[i] != '\0'; ++i)
-        VideoMemory[i] = (VideoMemory[i] & 0xFF00) | str[i];
-}
+            class SegmentDescriptor
+            {
+                private:
+                    uint16_t limit_lo;
+                    uint16_t base_lo;
+                    uint8_t base_hi;
+                    uint8_t type;
+                    uint8_t limit_hi;
+                    uint8_t base_vhi;
 
+                public:
+                    SegmentDescriptor(uint32_t base, uint32_t limit, uint8_t type);
+                    uint32_t Base();
+                    uint32_t Limit();
+            } __attribute__((packed));
 
+        private:
+            SegmentDescriptor nullSegmentSelector;
+            SegmentDescriptor unusedSegmentSelector;
+            SegmentDescriptor codeSegmentSelector;
+            SegmentDescriptor dataSegmentSelector;
 
-typedef void (*constructor)();
-extern "C" constructor start_ctors;
-extern "C" constructor end_ctors;
-extern "C" void callConstructors()
-{
-    for(constructor* i = &start_ctors; i != &end_ctors; i++)
-        (*i)();
-}
+        public:
 
+            GlobalDescriptorTable();
+            ~GlobalDescriptorTable();
 
+            uint16_t CodeSegmentSelector();
+            uint16_t DataSegmentSelector();
+    };
 
-extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot_magic*/)
-{
-    printf("Hello, World!");
-
-    GlobalDescriptorTable gdt;
-
-    while(1);
-}
+#endif
