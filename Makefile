@@ -34,3 +34,11 @@ mykernel.iso: mykernel.bin
 	echo '}' >> iso/boot/grub/grub.cfg
 	grub-mkrescue --output=$@ iso
 	rm -rf iso
+
+run: mykernel.iso
+	VBoxManage controlvm "Colin" poweroff || echo "No Instance Running"
+	sleep 2
+	VBoxManage startvm "Colin"
+
+stop: mykernel.iso
+	VBoxManage controlvm "Colin" poweroff || echo "No Instance Running"

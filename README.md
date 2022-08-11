@@ -27,11 +27,9 @@ make mykernel.iso
 Now you can open virtual box click new fill out the name and make sure to set the type to **other** and the version to **other/unknown** and NOT other/unknown (64-bit). You can leave the memory size at the default 64Mb of RAM as currently the OS is very small.
 You do not need a virtual hard disk currently however this is likely to change in the future. This will create a virtual machine but it has nothing to boot from so right click it from the list of VM's and open Settings. Navigate to storage and select the empty optical drive in the drop down menu to the right select "Choose a disk file...". Select the ISO and colin should be succesfully installed, enjoy!
 
-
-
 ## (2 - on bare metal using the GRUB boatloader - not reccomended currently)
 
-install the kernel to /boot/
+install the kernel to /boot/ (this can be re-run for any future updates)
 ```
 make install
 ```
