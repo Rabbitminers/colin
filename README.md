@@ -28,12 +28,13 @@ Now you can open virtual box click new fill out the name and make sure to set th
 You do not need a virtual hard disk currently however this is likely to change in the future. This will create a virtual machine but it has nothing to boot from so right click it from the list of VM's and open Settings. Navigate to storage and select the empty optical drive in the drop down menu to the right select "Choose a disk file...". Select the ISO and colin should be succesfully installed, enjoy!
 
 ## (2 - on bare metal using the GRUB boatloader - not reccomended currently)
+(Tested on Manjaro Linux)
 
 install the kernel to /boot/ (this can be re-run for any future updates)
 ```
 make install
 ```
-Open the GRUB config and add the following code **above** ### BEGIN /etc/grub.d/30_uefi-firmware ### 
+Open the GRUB config and add the following code **above** ### BEGIN /etc/grub.d/30_uefi-firmware ###. This will add colin to your GRUB menu at boot-time alowing you to access it aswell as any other install operating systems
 ```
 ## BEGIN COLIN ###
 
