@@ -5,3 +5,4 @@ mykernel.bin
 iso
 mykernel.iso
 gdt.o
+Makefile

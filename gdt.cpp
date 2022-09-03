@@ -1,29 +1,5 @@
-/*
-MIT License
-
-Copyright (c) 2022 Rabbitminers
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
 
 #include "gdt.h"
-
 
 uint32_t __stack_chk_fail_local(){
     return 0;
@@ -41,24 +17,41 @@ GlobalDescriptorTable::GlobalDescriptorTable()
     asm volatile("lgdt (%0)": :"p" (((uint8_t *) i)+2));
 }
 
-GlobalDescriptorTable::~GlobalDescriptorTable() {}
+GlobalDescriptorTable::~GlobalDescriptorTable()
+{
+}
 
-uint16_t GlobalDescriptorTable::DataSegmentSelector() {
+uint16_t GlobalDescriptorTable::DataSegmentSelector()
+{
     return (uint8_t*)&dataSegmentSelector - (uint8_t*)this;
 }
 
-uint16_t GlobalDescriptorTable::CodeSegmentSelector() {
+uint16_t GlobalDescriptorTable::CodeSegmentSelector()
+{
     return (uint8_t*)&codeSegmentSelector - (uint8_t*)this;
 }
 
-GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(uint32_t base, uint32_t limit, uint8_t type) {
+GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(uint32_t base, uint32_t limit, uint8_t type)
+{
     uint8_t* target = (uint8_t*)this;
 
-    if (limit <= 65536) {
+    if (limit <= 65536)
+    {
+        // 16-bit address space
         target[6] = 0x40;
     }
     else
     {
+        // 32-bit address space
+        // Now we have to squeeze the (32-bit) limit into 2.5 regiters (20-bit).
+        // This is done by discarding the 12 least significant bits, but this
+        // is only legal, if they are all ==1, so they are implicitly still there
+
+        // so if the last bits aren't all 1, we have to set them to 1, but this
+        // would increase the limit (cannot do that, because we might go beyond
+        // the physical limit or get overlap with other segments) so we have to
+        // compensate this by decreasing a higher bit (and might have up to
+        // 4095 wasted bytes behind the used memory)
 
         if((limit & 0xFFF) != 0xFFF)
             limit = (limit >> 12)-1;
@@ -83,7 +76,8 @@ GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(uint32_t base, uint3
     target[5] = type;
 }
 
-uint32_t GlobalDescriptorTable::SegmentDescriptor::Base() {
+uint32_t GlobalDescriptorTable::SegmentDescriptor::Base()
+{
     uint8_t* target = (uint8_t*)this;
 
     uint32_t result = target[7];
@@ -94,7 +88,8 @@ uint32_t GlobalDescriptorTable::SegmentDescriptor::Base() {
     return result;
 }
 
-uint32_t GlobalDescriptorTable::SegmentDescriptor::Limit() {
+uint32_t GlobalDescriptorTable::SegmentDescriptor::Limit()
+{
     uint8_t* target = (uint8_t*)this;
 
     uint32_t result = target[6] & 0xF;
@@ -106,3 +101,4 @@ uint32_t GlobalDescriptorTable::SegmentDescriptor::Limit() {
 
     return result;
 }
+

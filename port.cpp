@@ -12,9 +12,6 @@ Port::~Port()
 }
 
 
-
-
-
 Port8Bit::Port8Bit(uint16_t portnumber)
     : Port(portnumber)
 {
@@ -97,3 +94,4 @@ uint32_t Port32Bit::Read()
 {
     return Read32(portnumber);
 }
+
